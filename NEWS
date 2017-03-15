@@ -1,6 +1,13 @@
+# Version 0.1.2
+
+- Linetype for `plte_plot` now matches Williams (2016), e.g. solid lines for
+Y = 1.
+
+- Minor documentation improvements.
+
 # Version 0.1.1
 
-- `plte_builder` finds polynomial splines using b-splines basis. Note: apart
+- `plte_builder` finds polynomial splines using the B-spline basis. Note: apart
 from the degree of the piecewise polynomial, the default behaviour for `bs`
 is assumed.
 
