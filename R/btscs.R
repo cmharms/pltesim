@@ -8,8 +8,9 @@
 #' @param pad_ts logical indicating whether or not to fill in the time-series
 #' if panels are unbalanced.
 #'
-#' @return The original (\code{df}) data frame with an additional \code{spell}
-#' value identifying the number of observed periods since the last period.
+#' @return The original (\code{df}) data frame with an additional
+#' \code{spell_time} value identifying the number of observed periods in the spell,
+#' i.e. time points since the last period.
 #'
 #' @examples
 #' data('negative')
@@ -23,7 +24,8 @@
 #' R package version 1.3. \url{https://CRAN.R-project.org/package=DAMisc}.
 #'
 #' It was ported largely to reduce the dependencies needed for the examples.
-#' There are also internal improvements, largely to handle single period spells.
+#' There are also internal improvements, largely to handle single period spells
+#' and to start the spell time counter from 1.
 #'
 #' David's package implemented the Stata function from:
 #'
@@ -36,6 +38,10 @@
 btscs <- function (df, event, t_var, cs_unit, pad_ts = FALSE)
 {
     if (!is.data.frame(df)) stop('df must be a data frame.', call. = FALSE)
+
+    if (!all(c(event, t_var, cs_unit) %in% names(df)))
+        stop('Unable to locate all of the required variables in the supplied data frame.',
+             call. = FALSE)
 
     df$orig_order <- 1:nrow(df)
     df <- df[order(df[[cs_unit]], df[[t_var]]), ]
@@ -79,7 +85,7 @@ btscs <- function (df, event, t_var, cs_unit, pad_ts = FALSE)
         }
     }
     sp <- lapply(seq_along(sp), function(x) {
-        cbind(sp[[x]], data.frame(spell = spells(sp[[x]][[event]])),
+        cbind(sp[[x]], data.frame(spell_time = spells(sp[[x]][[event]])),
               row.names = NULL)
     })
     df <- do.call(rbind, sp)
@@ -93,5 +99,6 @@ btscs <- function (df, event, t_var, cs_unit, pad_ts = FALSE)
         df <- df[order(df[[cs_unit]], df[[t_var]]), ]
     }
     df$orig_order <- NULL
+    df$spell_time <- df$spell_time + 1
     return(df)
 }
